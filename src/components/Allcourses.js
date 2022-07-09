@@ -4,9 +4,28 @@ import Course from './Course';
 import base_url from '../api/bootapi';
 import axios from 'axios';
 import { Toast } from 'bootstrap';
+import '../Course.css';
+import axiosInstance from '../axiosInstance';
 
 
 const Allcourses = () => {
+
+     // Add a request interceptor
+     axiosInstance.interceptors.request.use(function (config) {
+        config.headers.authorization  = `Bearer ${getToken()}`
+        // Do something before request is sent
+        return config;
+      }, function (error) {
+        // Do something with request error
+            return Promise.reject(error);     
+     });
+    
+    
+     //getToken
+     function getToken(){
+        return localStorage.getItem('token');
+
+    }
 
     useEffect(() => {
         document.title = "All Courses";
@@ -15,7 +34,7 @@ const Allcourses = () => {
 
     //func to call server
     const getAllCoursesFromServer = () => {
-        axios.get(`${base_url}/courses`).then((response) => {
+        axiosInstance.get(`${base_url}/courses`).then((response) => {
             //console.log(response);
             console.log(response.data);
             setCourse(response.data)
@@ -37,8 +56,8 @@ const Allcourses = () => {
     return (
         
             <div className='text-center my-3'>
-                <h1 style={{backgroundColor: '#1266F1'}}>All Courses</h1>
-                <p>List of courses are as follows: </p>
+                {/* <h1 className='Titlestyle'>All Courses</h1> */}
+                {/* <p>List of courses are as follows: </p> */}
                 {
                     courses.length > 0 ? courses.map((item) => <Course key={item.id} course={item} update={updateCourses} />) : "No Courses"
                 }

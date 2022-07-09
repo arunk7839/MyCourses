@@ -4,8 +4,22 @@ import base_url from '../api/bootapi';
 import axios from 'axios';
 import UpdateCourse from './UpdateCourse';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import axiosInstance from '../axiosInstance';
 
 const Course = ({ course, update }) => {
+
+     // Add a request interceptor
+     axiosInstance.interceptors.request.use(function (config) {
+        config.headers.authorization  = `Bearer ${getToken()}`
+        // Do something before request is sent
+        return config;
+      }, function (error) {
+        // Do something with request error
+            return Promise.reject(error);
+            
+        
+      });
+    
 
     const [show, setShow] = useState(false);
 
@@ -15,11 +29,16 @@ const Course = ({ course, update }) => {
     }, [show]);
 
 
+     //getToken
+     function getToken(){
+        return localStorage.getItem('token');
+
+    }
 
 
     //creating function to delete data from server
     const deleteCourse = (id) => {
-        axios.delete(`${base_url}/courses/${id}`).then((response) => {
+        axiosInstance.delete(`${base_url}/courses/${id}`).then((response) => {
             //console.log(response);
             console.log(response);
             update(id);
